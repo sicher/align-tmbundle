@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby
+
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/align.rb'
+
+formatoptions = Hash.new
+formatoptions[:include_non_matching_lines] = true
+formatoptions[:right_justify_separators] = false
+formatoptions[:right_justify_fields] = false
+formatoptions[:right_field_whitespace] = true
+formatoptions[:right_separator_whitespace] = true
+
+patterns = "#{ENV['TM_COMMENT_START']} #{ENV['TM_COMMENT_END']} #{ENV['TM_COMMENT_START_2']} #{ENV['TM_COMMENT_END_2']}".gsub(/[ ]+/, " ")
+
+Align.reformatrange(Align.get_selection(), patterns, formatoptions)
+</string>
+	<key>input</key>
+	<string>selection</string>
+	<key>keyEquivalent</key>
+	<string>^A</string>
+	<key>name</key>
+	<string>Align comments</string>
+	<key>output</key>
+	<string>replaceSelectedText</string>
+	<key>uuid</key>
+	<string>8A8A6444-C983-460F-B0A5-7282A574047F</string>
+</dict>
+</plist>
