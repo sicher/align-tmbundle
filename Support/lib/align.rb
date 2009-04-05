@@ -5,8 +5,6 @@
 #  By Mikael Säker. All rights reserved.
 # 
 
-# TODO: Align word columns is bugged...
-
 require ENV['TM_SUPPORT_PATH'] + '/lib/textmate'
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui'
 
@@ -139,6 +137,7 @@ module Align
     rangefieldwidths = rangefieldwidths(range, patterns, options[:include_non_matching_lines])  
     tfw = targetfieldwidths(rangefieldwidths)
     p = patternregexp(patterns)
+    firstline_indent = nil
     if options[:right_justify_separators] then
       wsep = widestseparator(range, p)
     end
@@ -152,8 +151,10 @@ module Align
       end
       c = 0
       i = 0
-      indent = expand_tabs(l).index(/\S/).to_i
-      $stdout.write " " * indent
+      currentline_indent = expand_tabs(l).index(/\S/).to_i
+      if !firstline_indent then
+        firstline_indent = currentline_indent
+      end
       l.split(p).each do |s|
         i += s.length
         sep = l.slice(i, l.length).slice(p)
@@ -196,6 +197,11 @@ module Align
         end
         
         # Print it!
+        if options[:indent_as_first_line] then
+          $stdout.write " " * firstline_indent
+        else
+          $stdout.write " " * currentline_indent
+        end
         $stdout.write "#{field}#{fieldws}#{separator}#{separatorws}"
         c += 1
       end
