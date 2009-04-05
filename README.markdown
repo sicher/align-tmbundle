@@ -9,9 +9,29 @@ To use it, just press CTRL-SHIFT-A, and then select the appropriate action:
 * Align comments.
 * Align text columns.
 
+The currently selected block of text will be aligned, but you can invoke alignment without a selection too. In that case, the text "block" in which the cursor is placed will be aligned. A block is defined as all the lines of text above and below the current line that:
+
+* Has the same indentation as the current line.
+* Is not empty.
+
+## Installation
+
+Run this:
+ 
+	$ cd ~/Library/Application\ Support/TextMate/Bundles
+	$ git clone git://github.com/sicher/align-tmbundle.git Align.tmbundle
+	$ osascript -e 'tell app "TextMate" to reload bundles'
+
+You can also use GetBundles:
+
+	$ cd ~/Library/Application\ Support/TextMate/Bundles
+	$ svn co http://svn.textmate.org/trunk/Review/Bundles/GetBundles.tmbundle/
+
 ## Examples:
 
 ### Align assignments.
+
+	Patterns: "= += *= -= /="
 
 	Before:
 	
@@ -53,6 +73,8 @@ To use it, just press CTRL-SHIFT-A, and then select the appropriate action:
 
 ### Align comments. 
 
+	Patterns: "/* */" (TM_COMMENT_START TM_COMMENT_END TM_COMMENT_START_2 TM_COMMENT_END_2)
+
 	Before:
 
 	int     a;              /* a   */
@@ -83,8 +105,10 @@ To use it, just press CTRL-SHIFT-A, and then select the appropriate action:
 	static   struct  abc_str abc;   /* abc  */
 	static   struct  abc_str *pabc; /* pabc */
 
-### Align text columns
+### Align word columns
 
+	Patterns: "\b"
+	
 	Before:
 	
 	Name Age Married Hairstyle
@@ -106,16 +130,3 @@ To use it, just press CTRL-SHIFT-A, and then select the appropriate action:
 	Edna  31  no      greasy
 	Lorna 34  yes     curly
 	Artie 41  no      crewcut
-
-## Installation
-
-Run this:
- 
-	$ cd ~/Library/Application\ Support/TextMate/Bundles
-	$ git clone git://github.com/sicher/align-tmbundle.git Align.tmbundle
-	$ osascript -e 'tell app "TextMate" to reload bundles'
-
-You can also use GetBundles:
-
-	$ cd ~/Library/Application\ Support/TextMate/Bundles
-	$ svn co http://svn.textmate.org/trunk/Review/Bundles/GetBundles.tmbundle/

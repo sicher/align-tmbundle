@@ -10,6 +10,7 @@
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/align.rb'
 
 formatoptions = Hash.new
+formatoptions[:indent_as_first_line] = true
 formatoptions[:include_non_matching_lines] = true
 formatoptions[:right_justify_separators] = false
 formatoptions[:right_justify_fields] = false
