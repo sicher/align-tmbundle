@@ -61,9 +61,7 @@ module Align
 
   # Return an array containing one array for each line in the range which in turn containst
   # the widths between each ocurrence of the pattern matches. Whitespace is not counted.
-  def rangefieldwidths(range, patterns, includemathinglines)
-    p = patternregexp(patterns)
-
+  def rangefieldwidths(range, p, includemathinglines)
     rangefieldwidths = Array.new
     range.each do |l|
       if !includemathinglines and !p.match(l) then
@@ -79,9 +77,9 @@ module Align
   end
 
   def patternregexp(pattern)
-    ep = Regexp.escape(pattern)
-    np = ep.gsub(/\\ /, '|')
-    np = np.gsub(/\\\\/, '\\')
+    np = pattern.split(/\s+/).collect do |p|
+      Regexp.escape(p).gsub(/\\\\/, '\\')
+    end.join("|")
     return Regexp.new(np)
   end
 
@@ -134,9 +132,9 @@ module Align
   end
 
   def reformatrange(range, patterns, options)
-    rangefieldwidths = rangefieldwidths(range, patterns, options[:include_non_matching_lines])  
-    tfw = targetfieldwidths(rangefieldwidths)
     p = patternregexp(patterns)
+    rangefieldwidths = rangefieldwidths(range, p, options[:include_non_matching_lines])  
+    tfw = targetfieldwidths(rangefieldwidths)
     firstline_indent = nil
     if options[:right_justify_separators] then
       wsep = widestseparator(range, p)
@@ -155,6 +153,14 @@ module Align
       if !firstline_indent then
         firstline_indent = currentline_indent
       end
+      
+      # Print indentation...
+      if options[:indent_as_first_line] then
+        $stdout.write " " * firstline_indent
+      else
+        $stdout.write " " * currentline_indent
+      end
+            
       l.split(p).each do |s|
         i += s.length
         sep = l.slice(i, l.length).slice(p)
@@ -197,11 +203,6 @@ module Align
         end
         
         # Print it!
-        if options[:indent_as_first_line] then
-          $stdout.write " " * firstline_indent
-        else
-          $stdout.write " " * currentline_indent
-        end
         $stdout.write "#{field}#{fieldws}#{separator}#{separatorws}"
         c += 1
       end
