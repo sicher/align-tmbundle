@@ -5,13 +5,16 @@
 #  By Mikael Säker. All rights reserved.
 # 
 
+# TODO: convert ALL tabs to spaces, not just indents...
+
 require ENV['TM_SUPPORT_PATH'] + '/lib/textmate'
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui'
 
 module Align
   
   def expand_tabs(str)
-    return str.gsub(/\t/, " " * ENV["TM_TAB_SIZE"].to_i)
+    ts = ENV["TM_TAB_SIZE"].to_i
+    str.gsub(/([^\t]{#{ts}})|([^\t]*)\t/n){[$+].pack("A#{ts}")}
   end
 
   def empty?(str)
@@ -27,7 +30,7 @@ module Align
       return currentline
     end
     # Figure out the indent on the current line
-    block_indent = expand_tabs(lines[currentline]).index(/\S/).to_i
+    block_indent = lines[currentline].index(/\S/).to_i
     startline = currentline
     # Look backwards until beginning of this block...
     (currentline - 1).downto(0) do |i|
@@ -247,7 +250,9 @@ module Align
       @post_selection = nil
       selection       = lines
     end
-    return selection
+    return selection.map do |l|
+      expand_tabs(l)
+    end
   end
 
   def request_patterns(default)
