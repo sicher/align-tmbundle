@@ -5,8 +5,6 @@
 #  By Mikael Säker. All rights reserved.
 # 
 
-# TODO: convert ALL tabs to spaces, not just indents...
-
 require ENV['TM_SUPPORT_PATH'] + '/lib/textmate'
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui'
 
@@ -14,7 +12,12 @@ module Align
   
   def expand_tabs(str)
     ts = ENV["TM_TAB_SIZE"].to_i
-    str.gsub(/([^\t]{#{ts}})|([^\t]*)\t/n){[$+].pack("A#{ts}")}
+    str.gsub(/([^\t]{#{ts}})|([^\t]*)\t/){[$+].pack("A#{ts}")}
+  end
+
+  def unexpand_tabs(str)
+    ts = ENV["TM_TAB_SIZE"].to_i
+    str.gsub(/(.{#{ts}})/){ $+.gsub(/[ ]+\z/, "\t") }
   end
 
   def empty?(str)
@@ -139,6 +142,12 @@ module Align
     rangefieldwidths = rangefieldwidths(range, p, options[:include_non_matching_lines])  
     tfw = targetfieldwidths(rangefieldwidths)
     firstline_indent = nil
+    if ENV['TM_SOFT_TABS'] == "YES" then
+      soft_tabs = true
+    else
+      soft_tabs = false
+    end
+    
     if options[:right_justify_separators] then
       wsep = widestseparator(range, p)
     end
@@ -159,9 +168,9 @@ module Align
       
       # Print indentation...
       if options[:indent_as_first_line] then
-        $stdout.write " " * firstline_indent
+        printline = " " * firstline_indent
       else
-        $stdout.write " " * currentline_indent
+        printline = " " * currentline_indent
       end
             
       l.split(p).each do |s|
@@ -206,11 +215,14 @@ module Align
         end
         
         # Print it!
-        $stdout.write "#{field}#{fieldws}#{separator}#{separatorws}"
-        c += 1
+        printline  = "#{printline}#{field}#{fieldws}#{separator}#{separatorws}"
+        c         += 1
       end
-      # Newline
-      puts
+      if soft_tabs then
+        puts printline
+      else
+        puts unexpand_tabs(printline)
+      end
     end
     if @post_selection then
       puts @post_selection
